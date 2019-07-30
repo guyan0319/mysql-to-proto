@@ -9,7 +9,7 @@ import (
 )
 
 type Table struct {
-	Name []string
+	Name map[string][]Column
 }
 type Column struct {
 	Field string
@@ -44,7 +44,7 @@ func TableColumn(db *sql.DB, dbName string) {
 			fmt.Fprintf(os.Stderr, "Fatal error: ", err)
 			return
 		}
-		for rows.Next() {
+		for rowsTable.Next() {
 
 		}
 
