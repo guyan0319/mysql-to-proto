@@ -2,13 +2,11 @@ syntax = "proto3";
 package {{.Models}};
 
 // The {{.Models}} service definition.
-service {{.Models}} {
-  {{range .Funcs }}
-     Material: {{.Material}} - Count:{{.Count}}
-       rpc {{.Name}}({{.RequestName}}) returns () {{{.ResponseName}}}
-  {{ end }}
+service {{.Name}} {
+ // {{range .Funcs }}
+   //     rpc {{.Name}}({{.RequestName}}) returns () {{{.ResponseName}}}
+  //{{ end }}
 }
-
 
 message UserRequest {
   uint64 id = 1;

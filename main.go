@@ -4,8 +4,11 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"html/template"
 	"log"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 type Table struct {
@@ -19,6 +22,7 @@ type Column struct {
 }
 
 func main() {
+	//protofile:="D:/gopath/src/"
 	dbName := "yuedan_user"
 	db, err := Connect("mysql", "root:123456@tcp(127.0.0.1:3306)/"+dbName+"?charset=utf8mb4&parseTime=true")
 	//Table names to be excluded
@@ -28,9 +32,9 @@ func main() {
 	}
 	t := Table{}
 	t.TableColumn(db, dbName, exclude)
+	t.Generate()
 
-	fmt.Println(t.Comment)
-
+	fmt.Println(os.Getenv("GOPATH"))
 }
 
 //Extract table field information
@@ -66,7 +70,22 @@ func (table *Table) TableColumn(db *sql.DB, dbName string, exclude map[string]in
 
 //Generate proto files in the current directory
 func (table *Table) Generate() {
+	type RpcServers struct {
+		Models string
+		Name   string
+	}
+	rpcservers := RpcServers{Models: "sso", Name: "Sso"}
 
+	tmpl, err := template.ParseFiles("mysql-to-proto/template/proto.go.tpl")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Fatal error: ", err)
+		return
+	}
+	err = tmpl.Execute(os.Stdout, rpcservers)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Fatal error: ", err)
+		return
+	}
 }
 func Connect(driverName, dsn string) (*sql.DB, error) {
 	db, err := sql.Open(driverName, dsn)
@@ -82,4 +101,13 @@ func Connect(driverName, dsn string) (*sql.DB, error) {
 		log.Fatalln(err)
 	}
 	return db, err
+}
+
+//Get the program run path
+func GetRunDirectory() (string, error) {
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		return "", err
+	}
+	return strings.Replace(dir, "\\", "/", -1), nil
 }
