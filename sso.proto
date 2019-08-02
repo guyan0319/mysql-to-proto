@@ -1,13 +1,10 @@
 syntax = "proto3";
-package {{.Models}};
+package sso;
 
-// The {{.Models}} service definition.
-service {{.Name}} {
+// The sso service definition.
+service Sso {
 
- {{range .Funcs }}
- //
-       rpc {{.Name}}({{.RequestName}}) returns () { {{.ResponseName}} }
-  {{ end }}
+ 
 }
 
 message UserRequest {

@@ -7,7 +7,6 @@ import (
 	"html/template"
 	"log"
 	"os"
-	"path/filepath"
 	"strings"
 )
 
@@ -19,6 +18,22 @@ type Column struct {
 	Field   string
 	Type    string
 	Comment string
+}
+type RpcServers struct {
+	Models string
+	Name   string
+	Funcs  []FuncParam
+}
+type FuncParam struct {
+	Name         string
+	RequestName  string
+	ResponseName string
+}
+type Request struct {
+}
+type Response struct {
+}
+type Filter struct {
 }
 
 func main() {
@@ -71,12 +86,9 @@ func (table *Table) TableColumn(db *sql.DB, dbName string, exclude map[string]in
 
 //Generate proto files in the current directory
 func (table *Table) Generate(filepath, tpl string) {
-	type RpcServers struct {
-		Models string
-		Name   string
-	}
-	rpcservers := RpcServers{Models: "sso", Name: "Sso"}
 
+	rpcservers := RpcServers{Models: "sso", Name: "Sso"}
+	rpcservers.HandleFuncs(table)
 	tmpl, err := template.ParseFiles(tpl)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Fatal error: ", err)
@@ -97,9 +109,7 @@ func Connect(driverName, dsn string) (*sql.DB, error) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	//用于设置闲置的连接数。如果 <= 0, 则没有空闲连接会被保留
 	db.SetMaxIdleConns(0)
-	//用于设置最大打开的连接数,默认值为0表示不限制。
 	db.SetMaxOpenConns(30)
 	if err := db.Ping(); err != nil {
 		log.Fatalln(err)
@@ -107,11 +117,25 @@ func Connect(driverName, dsn string) (*sql.DB, error) {
 	return db, err
 }
 
-//Get the program run path
-func GetRunDirectory() (string, error) {
-	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	if err != nil {
-		return "", err
+func (r *RpcServers) HandleFuncs(t *Table) {
+	for key, val := range t.Comment {
+		fmt.Println(key, val)
+		k := StrFirstToUpper(key)
+		fmt.Println(k)
 	}
-	return strings.Replace(dir, "\\", "/", -1), nil
+
+}
+func StrFirstToUpper(str string) string {
+	temp := strings.Split(str, "_")
+	var upperStr string
+
+	for _, v := range temp {
+		if len(v) > 0 {
+			runes := []rune(v)
+			upperStr += string(runes[0]-32) + string(runes[1:])
+
+		}
+
+	}
+	return upperStr
 }
