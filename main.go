@@ -82,7 +82,6 @@ func main() {
 	db, err := Connect("mysql", "root:123456@tcp(127.0.0.1:3306)/"+dbName+"?charset=utf8mb4&parseTime=true")
 	//Table names to be excluded
 	exclude := map[string]int{"user_authority_log": 1}
-	//detail := Detail{}
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -182,9 +181,7 @@ func (table *Table) Generate(filepath, tpl string) {
 		return
 	}
 	file, err := os.OpenFile(filepath, os.O_CREATE|os.O_WRONLY, 0755)
-
 	err = tmpl.Execute(file, rpcservers)
-	//err = tmpl.Execute(os.Stdout, rpcservers)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Fatal error: ", err)
 		return
