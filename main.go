@@ -78,10 +78,10 @@ type AttrDetail struct {
 func main() {
 	tpl := "d:/gopath/src/mysql-to-proto/template/proto.go.tpl"
 	file := "d:/gopath/src/mysql-to-proto/sso.proto"
-	dbName := "yuedan_user"
+	dbName := "user"
 	db, err := Connect("mysql", "root:123456@tcp(127.0.0.1:3306)/"+dbName+"?charset=utf8mb4&parseTime=true")
 	//Table names to be excluded
-	exclude := map[string]int{"user_authority_log": 1}
+	exclude := map[string]int{"user_log": 1}
 	if err != nil {
 		fmt.Println(err)
 	}
